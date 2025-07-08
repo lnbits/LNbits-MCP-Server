@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "LNbits": {
+      "command": "/Users/[user]/Desktop/lnbits-mcp-server/venv/bin/lnbits-mcp-server",
+      "env": {
+        "LNBITS_URL": "https://your-lnbits-instance.com",
+        "LNBITS_API_KEY": "your_api_key_here",
+        "LNBITS_AUTH_METHOD": "api_key_header"
+      }
+    }
+  }
+}
