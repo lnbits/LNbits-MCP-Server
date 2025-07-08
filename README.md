@@ -297,8 +297,6 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - ✅ Payment processing (pay invoices, check status)
 - ✅ Lightning address payments (pay user@domain.com addresses)
 - ✅ Invoice creation and management
-- ✅ Extension support for LNURLp, TPoS, SatsPay, Watch-only
-- ✅ Admin tools for user and node management
 - ✅ Comprehensive error handling and structured logging
 - ✅ Claude Desktop integration
 - ✅ Type safety with Pydantic models
