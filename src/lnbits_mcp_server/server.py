@@ -153,8 +153,12 @@ class LNbitsMCPServer:
                         Get the current balance of the user's wallet.
                         </use_case>
                         <important_notes>
-                        This tool will return the current balance of the user's wallet in msats (sats * 1000).
-                        Give the user the balance in sats, NOT msats. So divide the balance by 1000 to get the balance in sats.
+                        Tell the user only their balance in sats (balance_sats) from the data detailed below.
+                        This tool returns JSON with the following fields:
+                        - balance: The current balance of the user's wallet in msats (sats * 1000).
+                        - balance_sats: The current balance of the user's wallet in sats.
+                        - currency: The currency of the wallet.
+                        - formated_balance: The current balance of the user's wallet in msats and sats e.g. "34,000 msats (34 sats)"
                         </important_notes>
                         """,
                         inputSchema={
@@ -262,13 +266,14 @@ class LNbitsMCPServer:
                         name="create_invoice",
                         description="""
                         <use_case>
-                        Create a new lightning invoice. The user will provide the amount, memo, description hash, and expiry.
+                        Create a new lightning invoice. The user will provide the amount in sats, memo, description hash, and expiry.
                         </use_case>
                         <important_notes>
                         This tool will create a new lightning invoice. The user will provide the amount, memo, description hash, and expiry.
-                        The amount is in msats / millisatoshis = sats * 1000. So if the user provides "10 sats", the amount is 10000 msats.
+                        The amount is in sats. So if the user provides "10 sats", the amount is 10.
                         The memo is the memo of the invoice.
                         The description hash is the description hash of the invoice.
+                        </important_notes>
                         """,
                         inputSchema={
                             "type": "object",
