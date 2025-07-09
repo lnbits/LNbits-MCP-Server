@@ -154,7 +154,7 @@ class LNbitsMCPServer:
                         </use_case>
                         <important_notes>
                         This tool will return the current balance of the user's wallet in msats (sats * 1000).
-                        Give the user the balance in sats, not msats. So divide the balance by 1000 to get the balance in sats.
+                        Give the user the balance in sats, NOT msats. So divide the balance by 1000 to get the balance in sats.
                         </important_notes>
                         """,
                         inputSchema={
@@ -191,7 +191,16 @@ class LNbitsMCPServer:
                     ),
                     Tool(
                         name="pay_invoice",
-                        description="Pay a Lightning invoice",
+                        description="""
+                        <use_case>
+                        Pay a lightning invoice. The user will provide the BOLT11 invoice string.
+                        </use_case>
+                        <important_notes>
+                        This tool will pay an invoice. The user will provide the BOLT11 invoice string.
+                        The amount to pay is in sats.
+                        The amount to pay is the amount of the invoice.
+                        </important_notes>
+                        """,
                         inputSchema={
                             "type": "object",
                             "properties": {
@@ -205,7 +214,15 @@ class LNbitsMCPServer:
                     ),
                     Tool(
                         name="get_payment_status",
-                        description="Get payment status by payment hash",
+                        description="""
+                        <use_case>
+                        Get the status of a lightning payment using the payment hash.
+                        </use_case>
+                        <important_notes>
+                        This tool will return the status of a payment by payment hash.
+                        Tell the user the status of the payment.
+                        </important_notes>
+                        """,
                         inputSchema={
                             "type": "object",
                             "properties": {
@@ -219,7 +236,17 @@ class LNbitsMCPServer:
                     ),
                     Tool(
                         name="decode_invoice",
-                        description="Decode a Lightning invoice to see its details",
+                        description="""
+                        <use_case>
+                        Decode a BOLT11 lightning invoice to get the amount, memo, and payment hash.
+                        </use_case>
+                        <important_notes>
+                        This tool will return the details of a lightning invoice.
+                        - The amount is in msats / millisatoshis = sats * 1000
+                        - The memo is the memo of the invoice.
+                        - The payment hash is the payment hash of the invoice.
+                        </important_notes>
+                        """,
                         inputSchema={
                             "type": "object",
                             "properties": {
@@ -233,7 +260,16 @@ class LNbitsMCPServer:
                     ),
                     Tool(
                         name="create_invoice",
-                        description="Create a new Lightning invoice",
+                        description="""
+                        <use_case>
+                        Create a new lightning invoice. The user will provide the amount, memo, description hash, and expiry.
+                        </use_case>
+                        <important_notes>
+                        This tool will create a new lightning invoice. The user will provide the amount, memo, description hash, and expiry.
+                        The amount is in msats / millisatoshis = sats * 1000. So if the user provides "10 sats", the amount is 10000 msats.
+                        The memo is the memo of the invoice.
+                        The description hash is the description hash of the invoice.
+                        """,
                         inputSchema={
                             "type": "object",
                             "properties": {
@@ -263,7 +299,16 @@ class LNbitsMCPServer:
                     ),
                     Tool(
                         name="pay_lightning_address",
-                        description="Pay a Lightning address (e.g., user@domain.com)",
+                        description="""
+                        <use_case>
+                        Send bitcoin sats to another person's wallet using their email style lightning address.
+                        The user will provide the lightning address (name@domain.com) and the amount to pay.
+                        </use_case>
+                        <important_notes>
+                        The amount to pay is in sats NOT msats. So if the user provides "10 sats", the amount is 10 sats.
+                        The comment is an optional comment for the payment.
+                        </important_notes>
+                        """,
                         inputSchema={
                             "type": "object",
                             "properties": {
