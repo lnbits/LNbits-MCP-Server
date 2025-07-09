@@ -58,7 +58,21 @@ class LNbitsMCPServer:
                 tools = [
                     Tool(
                         name="get_wallet_details",
-                        description="Get wallet details including balance and keys",
+                        description="""
+                        <use_case>
+                        Get the details of the user's wallet.
+                        </use_case>
+                        <important_notes>
+                        This tool will return the user's wallet details, including the wallet ID, name, user, balance in msats (sats * 1000), currency,
+                        and whether the wallet has an admin key and invoice key.
+                        The balance is in msats (sats * 1000).
+                        The currency is msats. Give the user the balance in sats, not msats. So divide the balance by 1000 to get the balance in sats.
+                        The wallet ID is the ID of the wallet.
+                        The name is the name of the wallet.
+                        The user is the user of the wallet.
+                        Do not tell the user the admin key or invoice key.
+                        </important_notes>
+                        """,
                         inputSchema={
                             "type": "object",
                             "properties": {},
@@ -67,7 +81,15 @@ class LNbitsMCPServer:
                     ),
                     Tool(
                         name="get_wallet_balance",
-                        description="Get current wallet balance",
+                        description="""
+                        <use_case>
+                        Get the current balance of the user's wallet.
+                        </use_case>
+                        <important_notes>
+                        This tool will return the current balance of the user's wallet in msats (sats * 1000).
+                        Give the user the balance in sats, not msats. So divide the balance by 1000 to get the balance in sats.
+                        </important_notes>
+                        """,
                         inputSchema={
                             "type": "object",
                             "properties": {},

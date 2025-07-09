@@ -57,7 +57,7 @@ class ConfigTools:
                     <important_notes>
                     After setting the URL, API key, bearer token, or OAuth2 token you must double and triple check
                     that what you have set is the same as what the user has provided.
-                    After setting the values, get the users balance to ensure that the values are correct.
+                    After setting the values, call the get_wallet_balance tool to ensure that the values are correct.
                     </important_notes>
                     """,
                     inputSchema={
