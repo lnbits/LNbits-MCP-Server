@@ -34,9 +34,14 @@ class InvoiceTools:
                 expiry=expiry,
             )
 
+            bolt11 = response.get("payment_request", response.get("bolt11"))
+
+            # Generate QR code URL for the invoice
+            qr_code_url = await client.generate_qr_code(bolt11)
+
             invoice_info = {
                 "payment_hash": response.get("payment_hash"),
-                "bolt11": response.get("payment_request", response.get("bolt11")),
+                "bolt11": bolt11,
                 "amount": amount,
                 "memo": memo,
                 "description_hash": description_hash,
@@ -45,7 +50,8 @@ class InvoiceTools:
                 "paid": False,
                 "settled": False,
                 "expires_at": None,  # TODO: Calculate from created_at + expiry
-                "qr_code": f"lightning:{response.get('payment_request', response.get('bolt11'))}",
+                "qr_code": qr_code_url,
+                "lightning_uri": f"lightning:{bolt11}",
                 "status": response.get("status", "pending"),
             }
 

@@ -47,8 +47,6 @@ class LNbitsConfig(BaseSettings):
         "case_sensitive": False,
     }
 
-    
-
 
 class LNbitsError(Exception):
     """Base exception for LNbits API errors."""
@@ -246,6 +244,24 @@ class LNbitsClient:
     async def decode_invoice(self, bolt11: str) -> Dict[str, Any]:
         """Decode a lightning invoice."""
         return await self.post("/api/v1/payments/decode", json={"data": bolt11})
+
+    async def generate_qr_code(self, data: str) -> str:
+        """Generate QR code URL for given data.
+
+        Args:
+            data: The data to encode in the QR code (e.g., BOLT11 invoice)
+
+        Returns:
+            URL to the QR code image
+        """
+        # URL encode the data parameter
+        from urllib.parse import quote
+
+        encoded_data = quote(data, safe="")
+        qr_path = f"api/v1/qrcode/{encoded_data}"
+
+        # Return the full URL to the QR code image using urljoin for proper URL construction
+        return urljoin(str(self.config.lnbits_url), qr_path)
 
     async def check_connection(self) -> bool:
         """Check if connection to LNbits is working."""

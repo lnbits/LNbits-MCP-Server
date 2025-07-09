@@ -38,10 +38,10 @@ class LNbitsMCPServer:
     def __init__(self, config: Optional[LNbitsConfig] = None):
         self.config = config or LNbitsConfig()
         self.server = Server("lnbits-mcp-server")
-        
+
         # Runtime configuration manager
         self.config_manager = RuntimeConfigManager(self.config)
-        
+
         # Tool handlers - updated to use config_manager
         self.core_tools = CoreTools(self.config_manager)
         self.payment_tools = PaymentTools(self.config_manager)
@@ -69,41 +69,46 @@ class LNbitsMCPServer:
                             "properties": {
                                 "lnbits_url": {
                                     "type": "string",
-                                    "description": "Base URL for LNbits instance (e.g., https://demo.lnbits.com)"
+                                    "description": "Base URL for LNbits instance (e.g., https://demo.lnbits.com)",
                                 },
                                 "api_key": {
                                     "type": "string",
-                                    "description": "API key for LNbits authentication"
+                                    "description": "API key for LNbits authentication",
                                 },
                                 "bearer_token": {
                                     "type": "string",
-                                    "description": "Bearer token for authentication (alternative to api_key)"
+                                    "description": "Bearer token for authentication (alternative to api_key)",
                                 },
                                 "oauth2_token": {
                                     "type": "string",
-                                    "description": "OAuth2 token for authentication (alternative to api_key)"
+                                    "description": "OAuth2 token for authentication (alternative to api_key)",
                                 },
                                 "auth_method": {
                                     "type": "string",
                                     "description": "Authentication method",
-                                    "enum": ["api_key_header", "api_key_query", "http_bearer", "oauth2"]
+                                    "enum": [
+                                        "api_key_header",
+                                        "api_key_query",
+                                        "http_bearer",
+                                        "oauth2",
+                                    ],
                                 },
                                 "timeout": {
                                     "type": "integer",
                                     "description": "Request timeout in seconds",
                                     "minimum": 1,
-                                    "maximum": 300
+                                    "maximum": 300,
                                 },
                                 "rate_limit_per_minute": {
                                     "type": "integer",
                                     "description": "Rate limit per minute",
                                     "minimum": 1,
-                                    "maximum": 1000
-                                }
+                                    "maximum": 1000,
+                                },
                             },
                             "required": [],
-                            "additionalProperties": False
-                        }
+                            "additionalProperties": False,
+                        },
                     ),
                     Tool(
                         name="get_lnbits_configuration",
@@ -111,8 +116,8 @@ class LNbitsMCPServer:
                         inputSchema={
                             "type": "object",
                             "properties": {},
-                            "additionalProperties": False
-                        }
+                            "additionalProperties": False,
+                        },
                     ),
                     Tool(
                         name="test_lnbits_configuration",
@@ -120,8 +125,8 @@ class LNbitsMCPServer:
                         inputSchema={
                             "type": "object",
                             "properties": {},
-                            "additionalProperties": False
-                        }
+                            "additionalProperties": False,
+                        },
                     ),
                     Tool(
                         name="get_wallet_details",
@@ -273,6 +278,11 @@ class LNbitsMCPServer:
                         The amount is in sats. So if the user provides "10 sats", the amount is 10.
                         The memo is the memo of the invoice.
                         The description hash is the description hash of the invoice.
+                        
+                        The response includes both a BOLT11 invoice string and a QR code URL that can be used to display a scannable QR code image for Lightning payments.
+                        The qr_code field contains a direct URL to a QR code image, while lightning_uri contains the lightning: protocol URI.
+                        
+                        Display the QR code image in the response then the BOLT11 invoice string.
                         </important_notes>
                         """,
                         inputSchema={
@@ -391,7 +401,11 @@ class LNbitsMCPServer:
                 logger.info("Tool called", tool=name, arguments=arguments)
 
                 # Configuration tools
-                if name in ["configure_lnbits", "get_lnbits_configuration", "test_lnbits_configuration"]:
+                if name in [
+                    "configure_lnbits",
+                    "get_lnbits_configuration",
+                    "test_lnbits_configuration",
+                ]:
                     result = await self.config_tools.call_tool(name, arguments)
                     # Convert TextContent list to proper format
                     if isinstance(result, list) and result:
@@ -505,7 +519,8 @@ class LNbitsMCPServer:
             print("🚀 Starting MCP stdio server...", file=sys.stderr)
             async with stdio_server() as (read_stream, write_stream):
                 print(
-                    "📡 MCP stdio streams established, running server...", file=sys.stderr
+                    "📡 MCP stdio streams established, running server...",
+                    file=sys.stderr,
                 )
                 await self.server.run(
                     read_stream,
