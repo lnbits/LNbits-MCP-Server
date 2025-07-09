@@ -6,6 +6,7 @@ import structlog
 
 from ..client import LNbitsClient, LNbitsError
 from ..models.schemas import Payment, WalletBalance, WalletDetails
+from ..utils.runtime_config import RuntimeConfigManager
 
 logger = structlog.get_logger(__name__)
 
@@ -13,14 +14,14 @@ logger = structlog.get_logger(__name__)
 class CoreTools:
     """Core wallet tools."""
 
-    def __init__(self, client: LNbitsClient):
-        self.client = client
+    def __init__(self, config_manager: RuntimeConfigManager):
+        self.config_manager = config_manager
 
     async def get_wallet_details(self) -> Dict[str, Any]:
         """Get wallet details including balance and keys."""
         try:
-            await self.client._ensure_client()
-            response = await self.client.get_wallet_details()
+            client = await self.config_manager.get_client()
+            response = await client.get_wallet_details()
 
             # Parse response into structured format
             wallet_data = {
@@ -46,15 +47,15 @@ class CoreTools:
     async def get_wallet_balance(self) -> Dict[str, Any]:
         """Get current wallet balance."""
         try:
-            await self.client._ensure_client()
-            response = await self.client.get_wallet_balance()
+            client = await self.config_manager.get_client()
+            response = await client.get_wallet_balance()
 
             # Handle different response formats
             if isinstance(response, dict):
                 balance = response.get("balance", 0)
             else:
                 # Fallback to wallet details if balance endpoint doesn't exist
-                wallet_details = await self.client.get_wallet_details()
+                wallet_details = await client.get_wallet_details()
                 balance = wallet_details.get("balance", 0)
 
             balance_data = {
@@ -87,8 +88,8 @@ class CoreTools:
     async def get_payments(self, limit: int = 10) -> List[Dict[str, Any]]:
         """Get payment history."""
         try:
-            await self.client._ensure_client()
-            response = await self.client.get_payments(limit)
+            client = await self.config_manager.get_client()
+            response = await client.get_payments(limit)
 
             # Parse payments into structured format
             payments = []
@@ -121,8 +122,8 @@ class CoreTools:
     async def check_connection(self) -> bool:
         """Check connection to LNbits instance."""
         try:
-            await self.client._ensure_client()
-            is_connected = await self.client.check_connection()
+            client = await self.config_manager.get_client()
+            is_connected = await client.check_connection()
 
             logger.info("Connection check", connected=is_connected)
             return is_connected

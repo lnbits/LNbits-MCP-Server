@@ -6,6 +6,7 @@ import structlog
 
 from ..client import LNbitsClient, LNbitsError
 from ..models.schemas import DecodedInvoice, PayInvoiceRequest, Payment
+from ..utils.runtime_config import RuntimeConfigManager
 
 logger = structlog.get_logger(__name__)
 
@@ -13,8 +14,8 @@ logger = structlog.get_logger(__name__)
 class PaymentTools:
     """Payment-related tools."""
 
-    def __init__(self, client: LNbitsClient):
-        self.client = client
+    def __init__(self, config_manager: RuntimeConfigManager):
+        self.config_manager = config_manager
 
     async def pay_invoice(
         self, bolt11: str, amount: Optional[int] = None
@@ -22,7 +23,8 @@ class PaymentTools:
         """Pay a Lightning invoice."""
         try:
             # Make payment directly
-            response = await self.client.pay_invoice(bolt11, amount)
+            client = await self.config_manager.get_client()
+            response = await client.pay_invoice(bolt11, amount)
 
             payment_data = {
                 "payment_hash": response.get("payment_hash"),
@@ -58,7 +60,8 @@ class PaymentTools:
     async def get_payment_status(self, payment_hash: str) -> Dict[str, Any]:
         """Get payment status by payment hash."""
         try:
-            response = await self.client.get_payment_status(payment_hash)
+            client = await self.config_manager.get_client()
+            response = await client.get_payment_status(payment_hash)
 
             payment_status = {
                 "payment_hash": payment_hash,
@@ -97,7 +100,8 @@ class PaymentTools:
     async def decode_invoice(self, bolt11: str) -> Dict[str, Any]:
         """Decode a Lightning invoice to see its details."""
         try:
-            response = await self.client.decode_invoice(bolt11)
+            client = await self.config_manager.get_client()
+            response = await client.decode_invoice(bolt11)
 
             decoded_data = {
                 "payment_hash": response.get("payment_hash"),
@@ -139,7 +143,8 @@ class PaymentTools:
         """Pay a Lightning address (e.g., user@domain.com)."""
         try:
             # Make payment to Lightning address
-            response = await self.client.pay_lightning_address(
+            client = await self.config_manager.get_client()
+            response = await client.pay_lightning_address(
                 lightning_address, amount_sats, comment
             )
 

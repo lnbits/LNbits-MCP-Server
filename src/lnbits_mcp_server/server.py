@@ -26,6 +26,8 @@ from .models.schemas import (
 from .tools.core import CoreTools
 from .tools.invoices import InvoiceTools
 from .tools.payments import PaymentTools
+from .tools.config_tools import ConfigTools
+from .utils.runtime_config import RuntimeConfigManager
 
 logger = structlog.get_logger(__name__)
 
@@ -35,13 +37,16 @@ class LNbitsMCPServer:
 
     def __init__(self, config: Optional[LNbitsConfig] = None):
         self.config = config or LNbitsConfig()
-        self.client = LNbitsClient(self.config)
         self.server = Server("lnbits-mcp-server")
-
-        # Tool handlers
-        self.core_tools = CoreTools(self.client)
-        self.payment_tools = PaymentTools(self.client)
-        self.invoice_tools = InvoiceTools(self.client)
+        
+        # Runtime configuration manager
+        self.config_manager = RuntimeConfigManager(self.config)
+        
+        # Tool handlers - updated to use config_manager
+        self.core_tools = CoreTools(self.config_manager)
+        self.payment_tools = PaymentTools(self.config_manager)
+        self.invoice_tools = InvoiceTools(self.config_manager)
+        self.config_tools = ConfigTools(self.config_manager)
 
         # Register MCP handlers
         self._register_handlers()
@@ -56,6 +61,68 @@ class LNbitsMCPServer:
 
             try:
                 tools = [
+                    Tool(
+                        name="configure_lnbits",
+                        description="Configure LNbits connection parameters at runtime",
+                        inputSchema={
+                            "type": "object",
+                            "properties": {
+                                "lnbits_url": {
+                                    "type": "string",
+                                    "description": "Base URL for LNbits instance (e.g., https://demo.lnbits.com)"
+                                },
+                                "api_key": {
+                                    "type": "string",
+                                    "description": "API key for LNbits authentication"
+                                },
+                                "bearer_token": {
+                                    "type": "string",
+                                    "description": "Bearer token for authentication (alternative to api_key)"
+                                },
+                                "oauth2_token": {
+                                    "type": "string",
+                                    "description": "OAuth2 token for authentication (alternative to api_key)"
+                                },
+                                "auth_method": {
+                                    "type": "string",
+                                    "description": "Authentication method",
+                                    "enum": ["api_key_header", "api_key_query", "http_bearer", "oauth2"]
+                                },
+                                "timeout": {
+                                    "type": "integer",
+                                    "description": "Request timeout in seconds",
+                                    "minimum": 1,
+                                    "maximum": 300
+                                },
+                                "rate_limit_per_minute": {
+                                    "type": "integer",
+                                    "description": "Rate limit per minute",
+                                    "minimum": 1,
+                                    "maximum": 1000
+                                }
+                            },
+                            "required": [],
+                            "additionalProperties": False
+                        }
+                    ),
+                    Tool(
+                        name="get_lnbits_configuration",
+                        description="Get current LNbits configuration status",
+                        inputSchema={
+                            "type": "object",
+                            "properties": {},
+                            "additionalProperties": False
+                        }
+                    ),
+                    Tool(
+                        name="test_lnbits_configuration",
+                        description="Test the current LNbits configuration by making a test API call",
+                        inputSchema={
+                            "type": "object",
+                            "properties": {},
+                            "additionalProperties": False
+                        }
+                    ),
                     Tool(
                         name="get_wallet_details",
                         description="""
@@ -273,6 +340,14 @@ class LNbitsMCPServer:
             try:
                 logger.info("Tool called", tool=name, arguments=arguments)
 
+                # Configuration tools
+                if name in ["configure_lnbits", "get_lnbits_configuration", "test_lnbits_configuration"]:
+                    result = await self.config_tools.call_tool(name, arguments)
+                    # Convert TextContent list to proper format
+                    if isinstance(result, list) and result:
+                        return {"content": [{"type": "text", "text": result[0].text}]}
+                    return {"content": [{"type": "text", "text": str(result)}]}
+
                 # Core tools
                 if name == "get_wallet_details":
                     result = await self.core_tools.get_wallet_details()
@@ -375,24 +450,28 @@ class LNbitsMCPServer:
             "🔌 Skipping initial connection test to keep client open", file=sys.stderr
         )
 
-        # Run server
-        print("🚀 Starting MCP stdio server...", file=sys.stderr)
-        async with stdio_server() as (read_stream, write_stream):
-            print(
-                "📡 MCP stdio streams established, running server...", file=sys.stderr
-            )
-            await self.server.run(
-                read_stream,
-                write_stream,
-                InitializationOptions(
-                    server_name="lnbits-mcp-server",
-                    server_version="0.1.0",
-                    capabilities=types.ServerCapabilities(
-                        tools=types.ToolsCapability(listChanged=False),
-                        experimental={},
+        try:
+            # Run server
+            print("🚀 Starting MCP stdio server...", file=sys.stderr)
+            async with stdio_server() as (read_stream, write_stream):
+                print(
+                    "📡 MCP stdio streams established, running server...", file=sys.stderr
+                )
+                await self.server.run(
+                    read_stream,
+                    write_stream,
+                    InitializationOptions(
+                        server_name="lnbits-mcp-server",
+                        server_version="0.1.0",
+                        capabilities=types.ServerCapabilities(
+                            tools=types.ToolsCapability(listChanged=False),
+                            experimental={},
+                        ),
                     ),
-                ),
-            )
+                )
+        finally:
+            # Cleanup runtime configuration manager
+            await self.config_manager.close()
 
 
 async def async_main():
@@ -442,15 +521,15 @@ async def async_main():
     try:
         # Load configuration
         print("📋 Loading LNbits configuration...", file=sys.stderr)
-        config = LNbitsConfig()
-        print(
-            f"✅ Config loaded: URL={config.lnbits_url}, API_KEY={'SET' if config.api_key else 'NOT SET'}, AUTH={config.auth_method}",
-            file=sys.stderr,
-        )
+        # config = LNbitsConfig()
+        # print(
+        #     f"✅ Config loaded: URL={config.lnbits_url}, API_KEY={'SET' if config.api_key else 'NOT SET'}, AUTH={config.auth_method}",
+        #     file=sys.stderr,
+        # )
 
         # Create and run server
         print("🏗️ Creating MCP server...", file=sys.stderr)
-        server = LNbitsMCPServer(config)
+        server = LNbitsMCPServer()
         print("🔗 Starting MCP server...", file=sys.stderr)
         await server.run()
 

@@ -47,15 +47,7 @@ class LNbitsConfig(BaseSettings):
         "case_sensitive": False,
     }
 
-    @model_validator(mode="after")
-    def validate_auth_methods(self):
-        """Validate that at least one authentication method is provided."""
-        if not any([self.api_key, self.bearer_token, self.oauth2_token]):
-            raise ValueError(
-                "At least one authentication method must be provided: "
-                "LNBITS_API_KEY, LNBITS_BEARER_TOKEN, or LNBITS_OAUTH2_TOKEN"
-            )
-        return self
+    
 
 
 class LNbitsError(Exception):

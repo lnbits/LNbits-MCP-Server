@@ -6,6 +6,7 @@ import structlog
 
 from ..client import LNbitsClient, LNbitsError
 from ..models.schemas import CreateInvoiceRequest, Invoice
+from ..utils.runtime_config import RuntimeConfigManager
 
 logger = structlog.get_logger(__name__)
 
@@ -13,8 +14,8 @@ logger = structlog.get_logger(__name__)
 class InvoiceTools:
     """Invoice management tools."""
 
-    def __init__(self, client: LNbitsClient):
-        self.client = client
+    def __init__(self, config_manager: RuntimeConfigManager):
+        self.config_manager = config_manager
 
     async def create_invoice(
         self,
@@ -25,7 +26,8 @@ class InvoiceTools:
     ) -> Dict[str, Any]:
         """Create a new Lightning invoice."""
         try:
-            response = await self.client.create_invoice(
+            client = await self.config_manager.get_client()
+            response = await client.create_invoice(
                 amount=amount,
                 memo=memo,
                 description_hash=description_hash,

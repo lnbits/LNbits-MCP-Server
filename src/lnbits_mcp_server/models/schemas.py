@@ -5,7 +5,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
 import structlog
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, HttpUrl
 
 logger = structlog.get_logger(__name__)
 
@@ -194,6 +194,68 @@ class APIResponse(BaseModel):
     data: Any = Field(description="Response data")
     success: bool = Field(description="Success status", default=True)
     message: Optional[str] = Field(description="Response message", default=None)
+
+    class Config:
+        extra = "allow"
+
+
+class ConfigureLNbitsRequest(BaseModel):
+    """Request model for configuring LNbits connection."""
+
+    lnbits_url: Optional[HttpUrl] = Field(
+        description="Base URL for LNbits instance", default=None
+    )
+    api_key: Optional[str] = Field(
+        description="API key for LNbits authentication", default=None
+    )
+    bearer_token: Optional[str] = Field(
+        description="Bearer token for authentication", default=None
+    )
+    oauth2_token: Optional[str] = Field(
+        description="OAuth2 token for authentication", default=None
+    )
+    auth_method: Optional[str] = Field(
+        description="Authentication method (api_key_header, api_key_query, http_bearer, oauth2)",
+        default=None
+    )
+    timeout: Optional[int] = Field(
+        description="Request timeout in seconds", default=None, ge=1, le=300
+    )
+    rate_limit_per_minute: Optional[int] = Field(
+        description="Rate limit per minute", default=None, ge=1, le=1000
+    )
+
+    @validator("auth_method")
+    def validate_auth_method(cls, v):
+        if v is not None:
+            valid_methods = ["api_key_header", "api_key_query", "http_bearer", "oauth2"]
+            if v not in valid_methods:
+                raise ValueError(f"auth_method must be one of: {valid_methods}")
+        return v
+
+    class Config:
+        extra = "forbid"
+
+
+class ConfigurationStatusResponse(BaseModel):
+    """Response model for configuration status."""
+
+    is_configured: bool = Field(description="Whether runtime configuration is active")
+    config: Dict[str, Any] = Field(description="Current configuration (sensitive data masked)")
+
+    class Config:
+        extra = "allow"
+
+
+class ConfigurationTestResponse(BaseModel):
+    """Response model for configuration test."""
+
+    success: bool = Field(description="Test success status")
+    message: str = Field(description="Test result message")
+    wallet_info: Optional[Dict[str, Any]] = Field(
+        description="Wallet info if test successful", default=None
+    )
+    error: Optional[str] = Field(description="Error message if test failed", default=None)
 
     class Config:
         extra = "allow"
