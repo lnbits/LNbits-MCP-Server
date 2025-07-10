@@ -50,9 +50,26 @@ pip install -e .[dev]
 
 ## ⚙️ Configuration
 
-### Environment Variables
+### Runtime Configuration (Recommended)
 
-Create a `.env` file or set environment variables:
+The LNbits MCP server supports runtime configuration through MCP tools, allowing you to configure the server directly from your LLM client without needing to modify environment variables or restart the server.
+
+```
+Configure lnbits.
+
+URL: https://demo.lnbits.com
+Key: [your api key]
+Auth method: api_key_header
+```
+
+Available configuration tools:
+- `configure_lnbits` - Configure LNbits connection parameters at runtime
+- `get_lnbits_configuration` - Get current configuration status
+- `test_lnbits_configuration` - Test the current configuration
+
+### Environment Variables (Legacy)
+
+The server still supports environment variable configuration for backward compatibility:
 
 ```bash
 # LNbits instance URL
@@ -110,15 +127,13 @@ For Claude Desktop, add to your `claude_desktop_config.json`:
 {
   "mcpServers": {
     "lnbits": {
-      "command": "lnbits-mcp-server",
-      "env": {
-        "LNBITS_URL": "https://your-lnbits-instance.com",
-        "LNBITS_API_KEY": "your_api_key_here"
-      }
+      "command": "/Users/[username]/Desktop/lnbits-mcp-server/venv/bin/lnbits-mcp-server"
     }
   }
 }
 ```
+
+*Note: With runtime configuration, you no longer need to set environment variables in the config file. Configure the server directly through your LLM client after setup.*
 
 ### Other MCP Clients
 
@@ -128,17 +143,21 @@ Add the server to your MCP client configuration:
 {
   "mcpServers": {
     "lnbits": {
-      "command": "lnbits-mcp-server",
-      "env": {
-        "LNBITS_URL": "https://your-lnbits-instance.com",
-        "LNBITS_API_KEY": "your_api_key_here"
-      }
+      "command": "lnbits-mcp-server"
     }
   }
 }
 ```
 
+*Note: With runtime configuration, you can configure the server directly through your MCP client after setup.*
+
 ## 🛠️ Available Tools
+
+### Configuration Tools
+
+- `configure_lnbits` - Configure LNbits connection parameters at runtime
+- `get_lnbits_configuration` - Get current configuration status
+- `test_lnbits_configuration` - Test the current configuration
 
 ### Core Wallet Tools
 
@@ -239,7 +258,15 @@ mypy src
 
 1. Configure the server in your Claude Desktop config
 2. Restart Claude Desktop
-3. Test with commands like:
+3. Configure your LNbits connection:
+   ```
+   Configure lnbits.
+   
+   URL: https://demo.lnbits.com
+   Key: [your api key]
+   Auth method: api_key_header
+   ```
+4. Test with commands like:
    - "Check my LNbits connection"
    - "What's my wallet balance?"
    - "Create a 100 sat invoice"
@@ -305,10 +332,12 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ## 🎯 Quick Start
 
 1. **Install**: `pip install -e .`
-2. **Configure**: Set `LNBITS_URL` and `LNBITS_API_KEY` environment variables
-3. **Add to Claude**: Update your `claude_desktop_config.json`
+2. **Add to Claude**: Update your `claude_desktop_config.json`
+3. **Configure**: Use runtime configuration through your LLM client
 4. **Test**: Ask Claude to check your wallet balance
 5. **Enjoy**: Lightning-fast Bitcoin payments through AI! ⚡
+
+*For detailed setup instructions, see [QUICK_START.md](QUICK_START.md)*
 
 ---
 

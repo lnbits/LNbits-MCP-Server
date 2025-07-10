@@ -9,29 +9,12 @@ The LNbits MCP server has been successfully installed and tested.
 ### Step 1: Get Your LNbits Credentials
 
 1. **Open your LNbits instance** (e.g., `https://your-lnbits-instance.com`)
-2. **Go to your wallet**
-3. **Click "API Info" or "Wallet Details"**
-4. **Copy your API key** (Admin key for full access, Invoice key for read-only)
+2. **In the sidebar, expand the "Node URL, API keys and API docs" section.
+4. **Copy your Admin or Invoice/readonly API key** (Admin key for full access, e.g. paying invoices etc., Invoice key for read-only e.g. creating invoices, checking wallet balance, etc.)
 
-### Step 2: Configure the Server
+### Step 2: Connect to your LLM client
 
-Choose one of these methods:
-
-#### Option A: Environment Variables
-```bash
-export LNBITS_URL="https://your-lnbits-instance.com"
-export LNBITS_API_KEY="your_api_key_here"
-```
-
-#### Option B: Create .env file
-```bash
-# Edit /Users/mark/Desktop/lnbits-mcp-server/.env
-LNBITS_URL=https://your-lnbits-instance.com
-LNBITS_API_KEY=your_api_key_here
-LNBITS_AUTH_METHOD=api_key_header
-```
-
-### Step 3: Connect to Claude Desktop
+#### Example: Claude Desktop
 
 1. **Find your Claude Desktop config file:**
    - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
@@ -42,22 +25,27 @@ LNBITS_AUTH_METHOD=api_key_header
 {
   "mcpServers": {
     "lnbits": {
-      "command": "/Users/mark/Desktop/lnbits-mcp-server/venv/bin/lnbits-mcp-server",
-      "env": {
-        "LNBITS_URL": "https://your-lnbits-instance.com",
-        "LNBITS_API_KEY": "your_api_key_here"
-      }
+      "command": "/Users/[username]/Desktop/lnbits-mcp-server/venv/bin/lnbits-mcp-server"
     }
   }
 }
 ```
 
-3. **Restart Claude Desktop**
+3. **Open or restart your LLM client**
 
-### Step 4: Test the Connection
+### Step 3: Test the Connection
 
-In Claude Desktop, you can now use commands like:
+First you need to configure your LLM client to use the LNbits MCP server. Do this with a command like:
 
+```
+Configure lnbits.
+
+URL: https://demo.lnbits.com
+Key: [your api key]
+Auth method: api_key_header
+```
+
+In your LLM client, you can now use commands like:
 - "Check my LNbits wallet balance"
 - "Get my recent payments"
 - "Create an invoice for 1000 sats"
