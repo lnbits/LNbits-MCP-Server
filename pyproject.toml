@@ -35,6 +35,7 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "structlog>=23.0.0",
     "typing-extensions>=4.0.0",
+    "fastmcp>=2.0.0",
 ]
 
 [project.optional-dependencies]
@@ -56,6 +57,7 @@ Issues = "https://github.com/anthropics/lnbits-mcp-server/issues"
 
 [project.scripts]
 lnbits-mcp-server = "lnbits_mcp_server.server:main"
+lnbits-mcp-http = "lnbits_mcp_server.fastmcp_server:main"
 
 [tool.hatch.version]
 path = "src/lnbits_mcp_server/__init__.py"
