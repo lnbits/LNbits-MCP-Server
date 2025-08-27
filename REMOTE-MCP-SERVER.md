@@ -8,35 +8,56 @@ The LNbits MCP Server provides a bridge between AI assistants and LNbits Lightni
 
 ### Key Features
 
-- **Remote Access**: Run as HTTP service accessible via URL
-- **MCP Protocol**: Proper MCP implementation over HTTP using FastMCP
-- **All LNbits Functions**: Full access to wallet operations, payments, invoices
-- **Runtime Configuration**: Configure LNbits connection without restart
-- **Production Ready**: Built with FastMCP for reliability and performance
+- **🔒 Multi-User Security**: Session-based credential isolation prevents users from accessing each other's wallets
+- **🌐 Remote Access**: Run as HTTP service accessible via URL  
+- **🔌 MCP Protocol**: Proper MCP implementation over HTTP using FastMCP
+- **⚡ All LNbits Functions**: Full access to wallet operations, payments, invoices
+- **🔄 Runtime Configuration**: Configure LNbits connection without restart
+- **🛡️ Production Ready**: Built with FastMCP for reliability and performance
+- **📊 Session Management**: Automatic session cleanup and monitoring
+
+## Security Architecture
+
+### Session Isolation
+Each user gets their own isolated session with separate:
+- LNbits configuration and credentials
+- Wallet connections and state
+- Payment history and invoices
+- Runtime configuration
+
+### Multi-User Safety
+- **No Credential Sharing**: User A cannot access User B's wallet
+- **Session Expiry**: Automatic cleanup of inactive sessions (60min default)
+- **Memory Isolation**: Each session runs in isolated tool instances
+- **Secure Logging**: Session IDs tracked for debugging without exposing credentials
 
 ## Available Tools
 
 The server exposes these MCP tools to AI assistants:
 
-### Configuration Tools
-- `configure_lnbits` - Configure LNbits connection parameters
-- `get_lnbits_configuration` - Get current configuration status  
+### Session Management Tools
+- `create_session` - Create a new isolated session for credential separation
+- `get_session_info` - Get information about your current session
+
+### Configuration Tools  
+- `configure_lnbits` - Configure LNbits connection parameters (session-isolated)
+- `get_lnbits_configuration` - Get current configuration status for your session
 - `test_lnbits_configuration` - Test configuration with API call
 
 ### Wallet Tools
-- `get_wallet_details` - Get wallet information
-- `get_wallet_balance` - Get current balance in sats
-- `get_payments` - Get payment history
-- `check_connection` - Test LNbits connectivity
+- `get_wallet_details` - Get wallet information (your session only)
+- `get_wallet_balance` - Get current balance in sats (your session only)
+- `get_payments` - Get payment history (your session only)
+- `check_connection` - Test LNbits connectivity for your session
 
 ### Payment Tools
-- `pay_invoice` - Pay BOLT11 lightning invoices
-- `get_payment_status` - Check payment status by hash
+- `pay_invoice` - Pay BOLT11 lightning invoices (from your wallet)
+- `get_payment_status` - Check payment status by hash (your session only)
 - `decode_invoice` - Decode BOLT11 invoice details
-- `pay_lightning_address` - Pay lightning addresses (user@domain.com)
+- `pay_lightning_address` - Pay lightning addresses (from your wallet)
 
 ### Invoice Tools
-- `create_invoice` - Create new lightning invoices with QR codes
+- `create_invoice` - Create new lightning invoices with QR codes (your wallet)
 
 ## Installation
 
@@ -57,18 +78,29 @@ pip install -e .
 
 ## Running as Remote Server
 
-### Basic Usage
+### Secure Multi-User Server (Recommended)
 ```bash
-# Start the HTTP server
+# Start the secure HTTP server with session isolation
+lnbits-mcp-secure --port 8001
+
+# Or using Python module  
+python -m lnbits_mcp_server.secure_fastmcp_server --port 8001
+```
+
+### Single-User Server (Legacy)
+```bash
+# Start the HTTP server (single user only - NOT secure for multi-user)
 lnbits-mcp-http --port 8001
 
 # Or using Python module
 python -m lnbits_mcp_server.fastmcp_server --port 8001
 ```
 
+⚠️ **Security Warning**: Only use `lnbits-mcp-http` for single-user deployments. For multi-user or public access, always use `lnbits-mcp-secure`.
+
 ### Command Line Options
 ```bash
-lnbits-mcp-http --help
+lnbits-mcp-secure --help
 
 Options:
   --host HOST      Host to bind to (default: 0.0.0.0)
@@ -88,14 +120,14 @@ When started, the server provides:
 Perfect for testing with OpenAI's MCP integration:
 
 ```bash
-# Terminal 1: Start server
-lnbits-mcp-http --port 8001
+# Terminal 1: Start secure server  
+lnbits-mcp-secure --port 8001
 
 # Terminal 2: Expose via ngrok
 ngrok http 8001
 ```
 
-Use the ngrok URL with your LLM service.
+Use the ngrok URL with your LLM service. Each user will automatically get their own isolated session.
 
 ### 2. VPS/Cloud Server
 Deploy to any cloud provider:
@@ -103,14 +135,14 @@ Deploy to any cloud provider:
 ```bash
 # Example systemd service
 [Unit]
-Description=LNbits MCP Server
+Description=LNbits Secure MCP Server
 After=network.target
 
 [Service]
 Type=simple
 User=your-user
 WorkingDirectory=/path/to/lnbits-mcp-server
-ExecStart=/path/to/venv/bin/lnbits-mcp-http --port 8001
+ExecStart=/path/to/venv/bin/lnbits-mcp-secure --port 8001
 Restart=always
 
 [Install]
@@ -126,7 +158,7 @@ COPY . .
 RUN pip install -e .
 
 EXPOSE 8001
-CMD ["lnbits-mcp-http", "--port", "8001", "--host", "0.0.0.0"]
+CMD ["lnbits-mcp-secure", "--port", "8001", "--host", "0.0.0.0"]
 ```
 
 ## Configuration
@@ -138,16 +170,22 @@ export LNBITS_API_KEY="your-api-key"
 export LNBITS_AUTH_METHOD="api_key_header"
 ```
 
-### Runtime Configuration
-The server supports runtime configuration through MCP tools:
+### Runtime Configuration (Session-Isolated)
+Each session can be configured independently through MCP tools:
 
 ```python
-# Configure via MCP client
+# First, create a session for credential isolation
+session_info = await mcp_client.call_tool("create_session")
+
+# Configure this session's LNbits connection
 await mcp_client.call_tool("configure_lnbits", {
-    "lnbits_url": "https://demo.lnbits.com",
+    "__session_id": "your-session-id",
+    "lnbits_url": "https://demo.lnbits.com", 
     "api_key": "your-api-key"
 })
 ```
+
+**Important**: Session IDs should be included in all tool calls to ensure credential isolation.
 
 ## Integration with LLM Services
 
@@ -251,10 +289,20 @@ For issues and questions:
 
 ## Architecture
 
-The remote server uses:
+The secure remote server uses:
 - **FastMCP**: Modern MCP framework for HTTP transport
 - **SSE Protocol**: Server-Sent Events for MCP communication  
+- **Session Isolation**: Each user gets isolated tool instances and credentials
 - **Async Architecture**: Non-blocking operations for performance
-- **Runtime Configuration**: Dynamic reconfiguration without restart
+- **Runtime Configuration**: Dynamic reconfiguration without restart per session
+- **Automatic Cleanup**: Expired session cleanup (60min default)
+- **Memory Safety**: No credential leakage between users
 
-This design maintains all the functionality of the original stdio MCP server while enabling remote access for cloud AI services.
+### Session Lifecycle
+1. **Creation**: New session created automatically or via `create_session` tool
+2. **Configuration**: Each session configured independently with `configure_lnbits`
+3. **Usage**: All tools automatically use session-specific credentials  
+4. **Expiry**: Sessions auto-expire after 60 minutes of inactivity
+5. **Cleanup**: Resources automatically cleaned up on session end
+
+This design maintains all functionality while ensuring complete credential isolation between users.

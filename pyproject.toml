@@ -58,6 +58,7 @@ Issues = "https://github.com/anthropics/lnbits-mcp-server/issues"
 [project.scripts]
 lnbits-mcp-server = "lnbits_mcp_server.server:main"
 lnbits-mcp-http = "lnbits_mcp_server.fastmcp_server:main"
+lnbits-mcp-secure = "lnbits_mcp_server.secure_fastmcp_server:main"
 
 [tool.hatch.version]
 path = "src/lnbits_mcp_server/__init__.py"
