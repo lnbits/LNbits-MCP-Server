@@ -1,12 +1,34 @@
+<a href="https://lnbits.com" target="_blank" rel="noopener noreferrer">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://i.imgur.com/QE6SIrs.png">
+    <img src="https://i.imgur.com/fyKPgVT.png" alt="LNbits" style="width:280px">
+  </picture>
+</a>
+
 # LNbits MCP Server
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-success?logo=open-source-initiative&logoColor=white)](./LICENSE)
+[![Built for LNbits](https://img.shields.io/badge/Built%20for-LNbits-4D4DFF?logo=lightning&logoColor=white)](https://github.com/lnbits/lnbits)
 
 Give your AI assistant a Lightning wallet. The LNbits MCP Server connects any [MCP-compatible](https://modelcontextprotocol.io/) AI client to your [LNbits](https://lnbits.com/) instance - check balances, create invoices, send payments, and manage extensions, all through natural language.
 
 <a href="https://rumble.com/v6vxr70-lnbits-mcp-server-lnbits-in-your-ai.html">
   <img src="https://github.com/lnbits/LNbits-MCP-Server/blob/main/LNbits_MCP.png" width="600" alt="Watch the LNbits MCP Server demo" />
+  <br/>
+  <img src="https://img.shields.io/badge/%E2%96%B6%20Watch%20Demo-LNbits%20MCP%20in%20Action-7C3AED?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik04IDV2MTRsMTEtN3oiLz48L3N2Zz4=&logoColor=white" alt="Watch Demo" />
 </a>
 
-> Click the image to watch the demo
+---
+
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [What you can say](#what-you-can-say)
+- [Available Tools](#available-tools)
+- [Configuration Reference](#configuration-reference)
+- [Development](#development)
+- [Contributing](#contributing)
+- [Powered by LNbits](#powered-by-lnbits)
 
 ---
 
@@ -178,12 +200,15 @@ mypy src
 
 Questions? Drop by the [Telegram group](https://t.me/lnbits) first - a quick chat often saves a round-trip on the PR.
 
-## Links
+---
 
-- [LNbits](https://lnbits.com/) - official site
-- [LNbits Docs](https://docs.lnbits.com) - documentation
-- [Issues](https://github.com/lnbits/LNbits-MCP-Server/issues) - report bugs or request features
-- [Telegram](https://t.me/lnbits) - community chat
+## Powered by LNbits
+
+[LNbits](https://lnbits.com) is a free and open-source Lightning accounts system.
+
+[![LNbits Docs](https://img.shields.io/badge/Read-LNbits%20Docs-10B981?logo=book&logoColor=white&labelColor=059669)](https://docs.lnbits.com)
+[![Visit LNbits Shop](https://img.shields.io/badge/Visit-LNbits%20Shop-7C3AED?logo=shopping-cart&logoColor=white&labelColor=5B21B6)](https://shop.lnbits.com/)
+[![Try myLNbits SaaS](https://img.shields.io/badge/Try-myLNbits%20SaaS-2563EB?logo=lightning&logoColor=white&labelColor=1E40AF)](https://my.lnbits.com/login)
 
 ## License
 
