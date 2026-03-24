@@ -55,7 +55,6 @@ That's it. Your AI can now talk to your LNbits wallet.
 
 > Get your API key from your LNbits instance sidebar under "Node URL, API keys and API docs". Admin key gives full access; Invoice key is read-only.
 
----
 
 ## What you can say
 
@@ -68,7 +67,6 @@ That's it. Your AI can now talk to your LNbits wallet.
 "Decode this invoice: lnbc..."
 ```
 
----
 
 ## Available Tools
 
@@ -116,7 +114,6 @@ That's it. Your AI can now talk to your LNbits wallet.
 | `list_users` / `create_user` | User management |
 | `get_system_stats` | System statistics |
 
----
 
 ## Configuration Reference
 
@@ -135,7 +132,6 @@ The server can be configured at runtime (recommended) or via environment variabl
 
 At least one auth method (`API_KEY`, `BEARER_TOKEN`, or `OAUTH2_TOKEN`) is required.
 
----
 
 ## Development
 
@@ -154,8 +150,6 @@ isort src tests
 # Type check
 mypy src
 ```
-
----
 
 ## Contributing
 
