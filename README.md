@@ -200,7 +200,6 @@ mypy src
 
 Questions? Drop by the [Telegram group](https://t.me/lnbits) first - a quick chat often saves a round-trip on the PR.
 
----
 
 ## Powered by LNbits
 
@@ -209,7 +208,3 @@ Questions? Drop by the [Telegram group](https://t.me/lnbits) first - a quick cha
 [![LNbits Docs](https://img.shields.io/badge/Read-LNbits%20Docs-10B981?logo=book&logoColor=white&labelColor=059669)](https://docs.lnbits.com)
 [![Visit LNbits Shop](https://img.shields.io/badge/Visit-LNbits%20Shop-7C3AED?logo=shopping-cart&logoColor=white&labelColor=5B21B6)](https://shop.lnbits.com/)
 [![Try myLNbits SaaS](https://img.shields.io/badge/Try-myLNbits%20SaaS-2563EB?logo=lightning&logoColor=white&labelColor=1E40AF)](https://my.lnbits.com/login)
-
-## License
-
-MIT
