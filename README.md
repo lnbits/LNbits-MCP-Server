@@ -12,6 +12,8 @@ Give your AI assistant a Lightning wallet. The LNbits MCP Server connects any [M
 
 ## Quick Start
 
+Three steps, takes about two minutes.
+
 ### 1. Install
 
 ```bash
@@ -20,9 +22,11 @@ cd LNbits-MCP-Server
 pip install -e .
 ```
 
+> You need Python 3.10+ installed. If you're unsure, run `python3 --version` first.
+
 ### 2. Add to your AI client
 
-Add the server to your MCP client config. For **Claude Desktop**:
+Tell your MCP client where the server lives. For **Claude Desktop**, edit the config file:
 
 **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
@@ -37,11 +41,11 @@ Add the server to your MCP client config. For **Claude Desktop**:
 }
 ```
 
-Restart your client after saving.
+> Restart Claude Desktop after saving. The server only activates after a restart.
 
 ### 3. Connect to your LNbits
 
-Once your client is running, tell your AI assistant:
+Now just talk to your AI. No extra config files needed - tell it your credentials in plain language:
 
 ```
 Configure lnbits.
@@ -51,12 +55,14 @@ Key: your_api_key_here
 Auth method: api_key_header
 ```
 
-That's it. Your AI can now talk to your LNbits wallet.
+That's it. Try asking "What's my wallet balance?" to confirm it works.
 
-> Get your API key from your LNbits instance sidebar under "Node URL, API keys and API docs". Admin key gives full access; Invoice key is read-only.
+> **Where's my API key?** Open your LNbits instance, look in the sidebar under "Node URL, API keys and API docs". Use the **Admin key** if you want to send payments, or the **Invoice key** if you only need to check balances and create invoices.
 
 
 ## What you can say
+
+Just talk naturally. The AI figures out which tool to call.
 
 ```
 "Check my wallet balance"
@@ -64,11 +70,15 @@ That's it. Your AI can now talk to your LNbits wallet.
 "Pay this invoice: lnbc10u1p3..."
 "Send 500 sats to alice@lnbits.com"
 "Show me my recent payments"
-"Decode this invoice: lnbc..."
+"Decode this invoice and tell me what it's for"
 ```
+
+> You can also chain requests: "Create a 5000 sat invoice and show me the QR code" or "Check if that last payment went through, and if so, what's my new balance?"
 
 
 ## Available Tools
+
+These are the tools the AI uses behind the scenes. You don't need to call them directly - just describe what you want and the AI picks the right one.
 
 ### Configuration
 
@@ -77,6 +87,8 @@ That's it. Your AI can now talk to your LNbits wallet.
 | `configure_lnbits` | Set LNbits URL, API key, and auth method at runtime |
 | `get_lnbits_configuration` | Show current connection settings |
 | `test_lnbits_configuration` | Verify the connection works |
+
+> You only need to configure once per session. The server remembers your settings until you restart it.
 
 ### Wallet
 
@@ -97,7 +109,11 @@ That's it. Your AI can now talk to your LNbits wallet.
 | `decode_invoice` | Decode and inspect a Lightning invoice |
 | `create_invoice` | Create a new Lightning invoice |
 
+> **Tip:** You can pay Lightning addresses directly - just say "Send 1000 sats to user@domain.com". No need to create an invoice first.
+
 ### Extensions (when enabled)
+
+These tools appear when you have the corresponding extensions installed on your LNbits instance.
 
 | Tool | Description |
 |---|---|
@@ -106,7 +122,9 @@ That's it. Your AI can now talk to your LNbits wallet.
 | `create_satspay_charge` / `get_satspay_charges` | SatsPay charges |
 | `create_watchonly_wallet` / `get_watchonly_wallets` | Watch-only wallets |
 
-### Admin (when admin access is available)
+### Admin (requires admin key)
+
+Only available when you connect with a Super User or admin-level API key.
 
 | Tool | Description |
 |---|---|
@@ -117,7 +135,7 @@ That's it. Your AI can now talk to your LNbits wallet.
 
 ## Configuration Reference
 
-The server can be configured at runtime (recommended) or via environment variables.
+Most people just use the runtime config (step 3 above). But if you prefer environment variables, these work too:
 
 | Variable | Description | Default |
 |---|---|---|
@@ -130,7 +148,7 @@ The server can be configured at runtime (recommended) or via environment variabl
 | `LNBITS_MAX_RETRIES` | Max retries on failure | `3` |
 | `LNBITS_RATE_LIMIT_PER_MINUTE` | Rate limit | `60` |
 
-At least one auth method (`API_KEY`, `BEARER_TOKEN`, or `OAUTH2_TOKEN`) is required.
+> At least one auth method is required. For most setups, `LNBITS_API_KEY` with `api_key_header` is all you need.
 
 
 ## Development
@@ -157,6 +175,8 @@ mypy src
 2. Create a feature branch
 3. Make your changes and add tests
 4. Submit a pull request
+
+Questions? Drop by the [Telegram group](https://t.me/lnbits) first - a quick chat often saves a round-trip on the PR.
 
 ## Links
 
