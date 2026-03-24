@@ -42,6 +42,7 @@ dev = [
     "pytest>=7.0.0",
     "pytest-asyncio>=0.21.0",
     "pytest-httpx>=0.21.0",
+    "jsonschema>=4.18.0",
     "black>=23.0.0",
     "isort>=5.0.0",
     "mypy>=1.0.0",
@@ -65,7 +66,7 @@ packages = ["src/lnbits_mcp_server"]
 
 [tool.black]
 line-length = 88
-target-version = ['py39']
+target-version = ['py310']
 include = '\.pyi?$'
 extend-exclude = '''
 /(
@@ -88,7 +89,7 @@ line_length = 88
 known_first_party = ["lnbits_mcp_server"]
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
