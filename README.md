@@ -1,5 +1,9 @@
 # LNbits MCP Server
 
+<p align="left">
+  <img src="https://github.com/lnbits/LNbits-MCP-Server/blob/main/LNbits_MCP.png" width="600" />
+</p>
+
 A Model Context Protocol (MCP) server for [LNbits](https://lnbits.com/) Lightning Network wallet integration. This server allows AI assistants to interact with LNbits through a comprehensive set of tools for wallet management, payments, invoices, and extensions.
 
 ## 💡 Examples
