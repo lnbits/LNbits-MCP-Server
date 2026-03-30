@@ -98,6 +98,10 @@ That's it. Try asking "What's my wallet balance?" to confirm it works.
 > **Where's my API key?** Open your LNbits instance, look in the sidebar under "Node URL, API keys and API docs". Use the **Admin key** if you want to send payments, or the **Invoice key** if you only need to check balances and create invoices.
 
 
+## Hosted deployment
+
+A hosted deployment is available on [Fronteir AI](https://fronteir.ai/mcp/lnbits-lnbits-mcp-server).
+
 ## What you can say
 
 Just talk naturally. The AI figures out which tool to call.
